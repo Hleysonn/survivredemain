@@ -38,42 +38,42 @@
           <div class="threat-icon">🔌</div>
           <h3>Panne électrique massive</h3>
           <p>Blackout prolongé, effondrement des communications et des services essentiels.</p>
-          <a href="#" class="card-link">SE PRÉPARER →</a>
+          <a href="/pannenelec" class="card-link">SE PRÉPARER →</a>
         </div>
         
         <div class="threat-card">
           <div class="threat-icon">⚔️</div>
           <h3>Guerre / Conflit armé</h3>
           <p>Bombardements, lois martiales, pillages, déplacements de population.</p>
-          <a href="#" class="card-link">SE PRÉPARER →</a>
+          <a href="/guerre" class="card-link">SE PRÉPARER →</a>
         </div>
         
         <div class="threat-card">
           <div class="threat-icon">🦠</div>
           <h3>Pandémie mondiale</h3>
           <p>Confinements, ruptures d'approvisionnement, systèmes de santé débordés.</p>
-          <a href="#" class="card-link">SE PRÉPARER →</a>
+          <a href="/pandemie" class="card-link">SE PRÉPARER →</a>
         </div>
         
         <div class="threat-card">
           <div class="threat-icon">🔥</div>
           <h3>Catastrophes naturelles</h3>
           <p>Feux de forêt, inondations, séismes, tempêtes et autres désastres.</p>
-          <a href="#" class="card-link">SE PRÉPARER →</a>
+          <a href="/catastrophes" class="card-link">SE PRÉPARER →</a>
         </div>
         
-        <div class="threat-card">
+        <div class="threat-card ">
           <div class="threat-icon">💵</div>
           <h3>Crise économique</h3>
           <p>Effondrement monétaire, hyperinflation, pénuries, chaos social.</p>
-          <a href="#" class="card-link">SE PRÉPARER →</a>
+          <a href="/crise-economique" class="card-link">SE PRÉPARER →</a>
         </div>
         
         <div class="threat-card">
           <div class="threat-icon">🏙️</div>
           <h3>Survie urbaine</h3>
           <p>Stratégies de survie dans les environnements urbains densément peuplés.</p>
-          <a href="#" class="card-link">SE PRÉPARER →</a>
+          <a href="/survie-urbaine" class="card-link">SE PRÉPARER →</a>
         </div>
       </div>
     </section>
@@ -88,9 +88,13 @@
       <div class="kit-content">
         <div class="kit-image">
           <!-- Image placeholder avec un fond gris et une icône -->
-          <div class="image-placeholder">
+          <div class="image-placeholder flex items-center justify-center flex-col">
             <span class="placeholder-icon">🎒</span>
+
+            <!-- <span class="cursor-pointer hover:text-white transition-all duration-300">VOIR NOS KITS DE SURVIE</span> -->
+            <a href="/boutique" class="btn btn-accent">VOIR NOS KITS DE SURVIE</a>
           </div>
+          
         </div>
         
         <div class="kit-items">
@@ -130,7 +134,7 @@
     </section>
     
     <!-- Témoignages -->
-    <section class="testimonials-section">
+    <!-- <section class="testimonials-section">
       <div class="section-header">
         <h2 class="section-title">ILS ONT SURVÉCU</h2>
         <p class="section-subtitle">Témoignages de personnes qui ont vécu des situations critiques</p>
@@ -141,7 +145,7 @@
           <div class="testimonial-quote">"Lors de la tempête qui a coupé l'électricité pendant 12 jours, notre préparation nous a permis de rester en sécurité et autonomes quand d'autres évacuaient."</div>
           <div class="testimonial-author">
             <div class="author-avatar">
-              <!-- Avatar placeholder -->
+            
               <div class="avatar-placeholder">JD</div>
             </div>
             <div class="author-info">
@@ -155,7 +159,7 @@
           <div class="testimonial-quote">"Sans notre plan d'évacuation et notre sac d'urgence prêt, nous n'aurions jamais pu quitter la zone avant que les feux ne bloquent toutes les routes."</div>
           <div class="testimonial-author">
             <div class="author-avatar">
-              <!-- Avatar placeholder -->
+             
               <div class="avatar-placeholder">ML</div>
             </div>
             <div class="author-info">
@@ -165,7 +169,7 @@
           </div>
         </div>
       </div>
-    </section>
+    </section> -->
     
     <!-- Call to Action -->
     <section class="cta-section">
@@ -174,8 +178,8 @@
         <h2>REJOIGNEZ LA COMMUNAUTÉ DES SURVIVALISTES</h2>
         <p>Partagez vos connaissances, apprenez des experts et préparez-vous ensemble aux défis de demain.</p>
         <div class="cta-buttons">
-          <button class="btn btn-large btn-accent">CRÉER UN COMPTE</button>
-          <button class="btn btn-large btn-outline">EXPLORER LE FORUM</button>
+          <button class="btn btn-large btn-accent" @click="handleNavigate('inscription')">CRÉER UN COMPTE</button>
+          <button class="btn btn-large btn-outline" @click="handleNavigate('forum')">EXPLORER LE FORUM</button>
         </div>
       </div>
     </section>
@@ -184,6 +188,7 @@
 
 <script setup lang="ts">
 import { ref } from 'vue';
+import { useRouter } from 'vue-router';
 
 const props = defineProps<{
   currentPage: string;
@@ -193,8 +198,19 @@ const emit = defineEmits<{
   (e: 'set-page', page: string): void;
 }>();
 
+const router = useRouter();
+
 const goToGuide = () => {
   emit('set-page', 'guide-demarrage');
+};
+
+const goToForum = () => {
+  emit('set-page', 'forum');
+};
+
+const handleNavigate = (page: string) => {
+  router.push(`/${page}`);
+  emit('set-page', page);
 };
 </script>
 
@@ -393,11 +409,16 @@ section {
   border-radius: 3px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
   transition: all 0.3s ease;
+  
+
 }
 
 .threat-card:hover {
   transform: translateY(-5px);
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 8px 16px rgba(255, 255, 255, 0.3);
+  background-color: rgba(230, 126, 34, 0.2);
+  transform: scale(1.1);
+  
 }
 
 .threat-icon {
@@ -420,6 +441,14 @@ section {
   display: inline-block;
   font-weight: bold;
   font-size: 0.9rem;
+  content: '';
+  
+}
+
+.card-link:hover {
+  color: #fff;
+  transform: scale(1.1);
+  
 }
 
 /* Kit section */
@@ -446,6 +475,12 @@ section {
   align-items: center;
   justify-content: center;
 }
+
+/* .image-placeholder:hover {
+  transform: scale(1.05);
+  transition: all 0.3s ease;
+  background-color: rgba(230, 126, 34, 0.2);
+} */
 
 .placeholder-icon {
   font-size: 5rem;

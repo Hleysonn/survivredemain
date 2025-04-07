@@ -1,4 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router';
+import RiskMap from '../components/RiskMap.vue'
 
 const routes = [
   {
@@ -119,6 +120,33 @@ const routes = [
     path: '/commande',
     name: 'commande',
     component: () => import('../components/pages/Commande.vue')
+  },
+  {
+    path: '/inscription',
+    name: 'inscription',
+    component: () => import('../components/pages/Inscription.vue')
+  },
+  {
+    path: '/connexion',
+    name: 'connexion',
+    component: () => import('../components/pages/Connexion.vue')
+  },
+  {
+    path: '/profile',
+    name: 'profile',
+    component: () => import('../components/pages/Profile.vue'),
+    meta: { requiresAuth: true }
+  },
+  {
+    path: '/settings',
+    name: 'settings',
+    component: () => import('../components/pages/Settings.vue'),
+    meta: { requiresAuth: true }
+  },
+  {
+    path: '/carte-risques',
+    name: 'carte-risques',
+    component: RiskMap
   }
 ];
 

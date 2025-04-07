@@ -160,6 +160,21 @@
           </li>
         </router-link>
         
+        <router-link 
+          to="/carte-risques" 
+          v-slot="{ isActive }"
+          custom
+        >
+          <li 
+            :class="{ 'active': isActive }"
+            @click="handleNavigate('carte-risques')"
+            class="nav-item"
+          >
+            <span class="nav-icon">🗺️</span>
+            <span class="nav-text">Carte des risques</span>
+          </li>
+        </router-link>
+        
         <li 
           :class="{ 
             'active': currentPage === 'equipement' || 
@@ -229,13 +244,78 @@
             <span class="nav-text">Boutique</span>
           </li>
         </router-link>
+        
+        <div class="auth-links">
+          <router-link 
+            to="/connexion" 
+            v-slot="{ isActive }"
+            custom
+            v-if="!isLoggedIn"
+          >
+            <li 
+              :class="{ 'active': isActive }"
+              @click="handleNavigate('connexion')"
+              class="nav-item auth-item login-item"
+            >
+              <span class="nav-icon">🔑</span>
+              <span class="nav-text">Connexion</span>
+            </li>
+          </router-link>
+          
+          <router-link 
+            to="/inscription" 
+            v-slot="{ isActive }"
+            custom
+            v-if="!isLoggedIn"
+          >
+            <li 
+              :class="{ 'active': isActive }"
+              @click="handleNavigate('inscription')"
+              class="nav-item auth-item signup-item"
+            >
+              <span class="nav-icon">✏️</span>
+              <span class="nav-text">Inscription</span>
+            </li>
+          </router-link>
+          
+          <li 
+            v-if="isLoggedIn"
+            class="nav-item auth-item profile-item"
+            @click="toggleUserMenu"
+          >
+            <span class="nav-icon">👤</span>
+            <span class="nav-text">Mon Compte</span>
+            <span class="dropdown-icon">
+              <svg class="chevron-icon" :class="{ 'rotate': showUserMenu }" viewBox="0 0 24 24" width="14" height="14">
+                <path fill="currentColor" d="M7 10l5 5 5-5z"/>
+              </svg>
+            </span>
+          </li>
+          
+          <transition name="submenu-fade">
+            <ul class="submenu user-menu" v-show="showUserMenu && isLoggedIn">
+              <li class="submenu-item" @click="handleNavigate('profile')">
+                <span class="nav-icon">👤</span>
+                <span class="nav-text">Mon profil</span>
+              </li>
+              <li class="submenu-item" @click="handleNavigate('settings')">
+                <span class="nav-icon">⚙️</span>
+                <span class="nav-text">Paramètres</span>
+              </li>
+              <li class="submenu-item" @click="logout">
+                <span class="nav-icon">🚪</span>
+                <span class="nav-text">Déconnexion</span>
+              </li>
+            </ul>
+          </transition>
+        </div>
       </ul>
     </div>
   </nav>
 </template>
 
 <script setup lang="ts">
-import { ref, defineProps, defineEmits, watch } from 'vue';
+import { ref, defineProps, defineEmits, watch, onMounted, onUnmounted } from 'vue';
 import { useRouter } from 'vue-router';
 
 const router = useRouter();
@@ -267,6 +347,25 @@ const emit = defineEmits(['set-page', 'toggle-catastrophe-menu', 'toggle-equipem
 const mobileMenuActive = ref(false);
 const localCatastropheMenu = ref(props.showCatastropheSubMenu);
 const localEquipementMenu = ref(props.showEquipementSubMenu);
+const showUserMenu = ref(false);
+const isLoggedIn = ref(false);
+
+// Vérifier si l'utilisateur est connecté
+onMounted(() => {
+  isLoggedIn.value = localStorage.getItem('isLoggedIn') === 'true';
+  
+  // Écouter les changements d'état de connexion
+  window.addEventListener('auth-change', () => {
+    isLoggedIn.value = localStorage.getItem('isLoggedIn') === 'true';
+  });
+});
+
+// Nettoyer l'écouteur d'événements
+onUnmounted(() => {
+  window.removeEventListener('auth-change', () => {
+    isLoggedIn.value = localStorage.getItem('isLoggedIn') === 'true';
+  });
+});
 
 // Ajout de la classe menu-active au navbar quand le menu mobile est actif
 watch(mobileMenuActive, (isActive) => {
@@ -294,6 +393,10 @@ const toggleEquipementSubMenu = () => {
   emit('toggle-equipement-menu');
 };
 
+const toggleUserMenu = () => {
+  showUserMenu.value = !showUserMenu.value;
+};
+
 const handleNavigate = (page: string) => {
   if (mobileMenuActive.value) {
     mobileMenuActive.value = false;
@@ -309,6 +412,12 @@ const handleNavigate = (page: string) => {
   
   // Émettre l'événement pour maintenir la compatibilité
   emit('set-page', page);
+};
+
+const logout = () => {
+  localStorage.removeItem('isLoggedIn');
+  isLoggedIn.value = false;
+  router.push('/');
 };
 
 const getIconForPage = (pageId: string) => {
@@ -466,9 +575,7 @@ const getIconForEquipement = (pageId: string) => {
 }
 
 .nav-item:after, 
-.nav-links li:not(.has-submenu):hover:after,
-.nav-item.active:after, 
-.nav-links li.active:not(.has-submenu):after {
+.nav-links li:not(.has-submenu):after {
   content: '';
   position: absolute;
   left: 0;
@@ -601,6 +708,50 @@ const getIconForEquipement = (pageId: string) => {
   background: linear-gradient(135deg, var(--color-primary), rgba(30, 41, 59, 0.9));
 }
 
+/* Auth Links */
+.auth-links {
+  margin-top: 1.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.auth-item {
+  transition: all 0.3s ease;
+}
+
+.login-item {
+  background-color: rgba(0, 0, 0, 0.3);
+}
+
+.signup-item {
+  background: linear-gradient(135deg, var(--color-accent), #d35400);
+  color: white;
+  font-weight: 600;
+}
+
+.profile-item {
+  background-color: rgba(0, 0, 0, 0.3);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+}
+
+.user-menu {
+  margin-left: 0;
+  padding-left: 0;
+  border-left: none;
+  background-color: rgba(0, 0, 0, 0.2);
+  margin-top: 0.5rem;
+  border-radius: 6px;
+}
+
+.user-menu .submenu-item {
+  padding-left: 2.5rem !important;
+}
+
 /* Version Mobile */
 @media screen and (max-width: 1024px) {
   .navbar {
@@ -695,6 +846,15 @@ const getIconForEquipement = (pageId: string) => {
     opacity: 1;
     visibility: visible;
     pointer-events: auto;
+  }
+  
+  .auth-links {
+    margin-top: 1rem;
+    flex-direction: column;
+  }
+  
+  .login-item, .signup-item {
+    margin: 0.2rem 0;
   }
 }
 

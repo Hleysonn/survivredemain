@@ -250,7 +250,7 @@
             to="/connexion" 
             v-slot="{ isActive }"
             custom
-            v-if="!isLoggedIn"
+            v-if="!authStore.isLoggedIn"
           >
             <li 
               :class="{ 'active': isActive }"
@@ -266,7 +266,7 @@
             to="/inscription" 
             v-slot="{ isActive }"
             custom
-            v-if="!isLoggedIn"
+            v-if="!authStore.isLoggedIn"
           >
             <li 
               :class="{ 'active': isActive }"
@@ -279,7 +279,7 @@
           </router-link>
           
           <li 
-            v-if="isLoggedIn"
+            v-if="authStore.isLoggedIn"
             class="nav-item auth-item profile-item"
             @click="toggleUserMenu"
           >
@@ -293,7 +293,7 @@
           </li>
           
           <transition name="submenu-fade">
-            <ul class="submenu user-menu" v-show="showUserMenu && isLoggedIn">
+            <ul class="submenu user-menu" v-show="showUserMenu && authStore.isLoggedIn">
               <li class="submenu-item" @click="handleNavigate('profile')">
                 <span class="nav-icon">👤</span>
                 <span class="nav-text">Mon profil</span>
@@ -317,8 +317,11 @@
 <script setup lang="ts">
 import { ref, defineProps, defineEmits, watch, onMounted, onUnmounted } from 'vue';
 import { useRouter } from 'vue-router';
+import { useAuthStore } from '../stores/auth';
 
 const router = useRouter();
+const authStore = useAuthStore();
+
 const props = defineProps({
   currentPage: {
     type: String,
@@ -348,24 +351,6 @@ const mobileMenuActive = ref(false);
 const localCatastropheMenu = ref(props.showCatastropheSubMenu);
 const localEquipementMenu = ref(props.showEquipementSubMenu);
 const showUserMenu = ref(false);
-const isLoggedIn = ref(false);
-
-// Vérifier si l'utilisateur est connecté
-onMounted(() => {
-  isLoggedIn.value = localStorage.getItem('isLoggedIn') === 'true';
-  
-  // Écouter les changements d'état de connexion
-  window.addEventListener('auth-change', () => {
-    isLoggedIn.value = localStorage.getItem('isLoggedIn') === 'true';
-  });
-});
-
-// Nettoyer l'écouteur d'événements
-onUnmounted(() => {
-  window.removeEventListener('auth-change', () => {
-    isLoggedIn.value = localStorage.getItem('isLoggedIn') === 'true';
-  });
-});
 
 // Ajout de la classe menu-active au navbar quand le menu mobile est actif
 watch(mobileMenuActive, (isActive) => {
@@ -415,8 +400,8 @@ const handleNavigate = (page: string) => {
 };
 
 const logout = () => {
-  localStorage.removeItem('isLoggedIn');
-  isLoggedIn.value = false;
+  authStore.logout();
+  showUserMenu.value = false;
   router.push('/');
 };
 

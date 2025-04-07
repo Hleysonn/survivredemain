@@ -110,8 +110,11 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue';
 import { useRouter } from 'vue-router';
+import { useAuthStore } from '../../stores/auth';
+import { authService } from '../../services/authService';
 
 const router = useRouter();
+const authStore = useAuthStore();
 
 const formData = ref({
   email: '',
@@ -131,30 +134,32 @@ const isFormValid = computed(() => {
 
 const handleLogin = async () => {
   try {
-    const response = await fetch('http://localhost:3000/api/users/connexion', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        email: formData.value.email,
-        motDePasse: formData.value.motDePasse
-      })
-    });
-
-    if (!response.ok) {
-      const data = await response.json();
-      throw new Error(data.message || 'Erreur lors de la connexion');
+    const data = await authService.login(formData.value.email, formData.value.motDePasse);
+    
+    console.log('Réponse complète du serveur:', JSON.stringify(data, null, 2));
+    
+    if (!data.user || !data.token) {
+      throw new Error('Données de connexion invalides');
     }
-
-    const data = await response.json();
     
-    // Stocker le token et mettre à jour l'état de connexion
-    localStorage.setItem('token', data.token);
-    localStorage.setItem('isLoggedIn', 'true');
+    // Mettre à jour le store avec le token et les informations utilisateur
+    const userData = {
+      _id: data.user.id,
+      nom: data.user.nom,
+      prenom: data.user.prenom,
+      email: data.user.email
+    };
     
-    // Déclencher l'événement de changement d'état d'authentification
-    window.dispatchEvent(new Event('auth-change'));
+    console.log('Données utilisateur à stocker:', userData);
+    
+    authStore.login(data.token, userData);
+    
+    console.log('État du store après connexion:', {
+      user: authStore.user,
+      isLoggedIn: authStore.isLoggedIn,
+      isAuthenticated: authStore.isAuthenticated,
+      token: authStore.token
+    });
     
     router.push('/profile');
   } catch (error) {

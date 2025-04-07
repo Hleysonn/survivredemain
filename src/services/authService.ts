@@ -31,7 +31,7 @@ export const authService = {
 
   async login(email: string, motDePasse: string) {
     try {
-      const response = await axios.post(`${API_URL}/users/login`, { email, motDePasse });
+      const response = await axios.post(`${API_URL}/users/connexion`, { email, motDePasse });
       return response.data;
     } catch (error) {
       if (axios.isAxiosError(error)) {

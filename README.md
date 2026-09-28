@@ -1,5 +1,7 @@
-# Vue 3 + TypeScript + Vite
+# Survivre Demain
 
-This template should help get you started developing with Vue 3 and TypeScript in Vite. The template uses Vue 3 `<script setup>` SFCs, check out the [script setup docs](https://v3.vuejs.org/api/sfc-script-setup.html#sfc-script-setup) to learn more.
+Application web de préparation et de survie face aux crises : pannes électriques, conflits, pandémies, catastrophes naturelles et crises économiques.
 
-Learn more about the recommended Project Setup and IDE Support in the [Vue Docs TypeScript Guide](https://vuejs.org/guide/typescript/overview.html#project-setup).
+Elle propose des guides pratiques (survie urbaine et sauvage, eau, alimentation, abri, premiers soins, équipement), une carte des risques, un forum, une boutique et un espace compte.
+
+Stack : Vue 3, TypeScript et Vite côté interface ; Express, MongoDB et authentification JWT côté serveur.
